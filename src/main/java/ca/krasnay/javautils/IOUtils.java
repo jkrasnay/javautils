@@ -23,7 +23,7 @@ import java.io.Writer;
  */
 public class IOUtils {
 
-    private static final String UTF_8 = "UTF-8";
+    public static final String UTF_8 = "UTF-8";
 
     public static final int BYTE_BUFFER_SIZE = 4096;
 
