@@ -23,6 +23,12 @@ import java.io.Writer;
  */
 public class IOUtils {
 
+    private static final String UTF_8 = "UTF-8";
+
+    public static final int BYTE_BUFFER_SIZE = 4096;
+
+    public static final int CHAR_BUFFER_SIZE = 4096;
+
     /**
      * Quietly loses the given closeable. Ignores null if passed, and catches
      * and ignores any IOException thrown by the close method.
@@ -49,8 +55,23 @@ public class IOUtils {
      *            OutputStream to receive the copy.
      */
     public static void copy(InputStream in, OutputStream out) {
+        copy(in, out, BYTE_BUFFER_SIZE);
+    }
+
+    /**
+     * Copies the entire contents of an input stream to an output stream.
+     *
+     * @param in
+     *            InputStream to be copied.
+     * @param out
+     *            OutputStream to receive the copy.
+     * @param bufferSize
+     *            Size of buffer used for transfers.
+     */
+    public static void copy(InputStream in, OutputStream out, int bufferSize) {
+
         try {
-            byte[] buffer = new byte[4096];
+            byte[] buffer = new byte[bufferSize];
             while (true) {
                 int count = in.read(buffer);
                 if (count < 0) {
@@ -73,8 +94,23 @@ public class IOUtils {
      *            Writer to receive the copy.
      */
     public static void copy(Reader reader, Writer writer) {
+        copy(reader, writer, CHAR_BUFFER_SIZE);
+    }
+
+    /**
+     * Copies the entire contents of a reader to a writer.
+     *
+     * @param reader
+     *            Reader to be copied.
+     * @param writer
+     *            Writer to receive the copy.
+     * @param bufferSize
+     *            Size of buffer used for transfers.
+     */
+    public static void copy(Reader reader, Writer writer, int bufferSize) {
+
         try {
-            char[] buffer = new char[4096];
+            char[] buffer = new char[bufferSize];
             while (true) {
                 int count = reader.read(buffer);
                 if (count < 0) {
@@ -85,6 +121,26 @@ public class IOUtils {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Loads the given resource as a string using the given encoding.
+     *
+     * @param clazz
+     *            Class that is the base for the resource.
+     * @param resource
+     *            Resource name to load.
+     * @param encoding
+     *            Encoding to use.
+     */
+    public static String toString(Class<?> clazz, String resource, String encoding) {
+        InputStream in = null;
+        try {
+            in = clazz.getResourceAsStream(resource);
+            return toString(in, encoding);
+        } finally {
+            close(in);
         }
     }
 
@@ -137,6 +193,18 @@ public class IOUtils {
     }
 
     /**
+     * Loads the given resource as a string using UTF-8 encoding.
+     *
+     * @param clazz
+     *            Class that is the base for the resource.
+     * @param resource
+     *            Resource name to load.
+     */
+    public static String toStringUtf8(Class<?> clazz, String resource) {
+        return toString(clazz, resource, UTF_8);
+    }
+
+    /**
      * Reads the contents of a file into a string using UTF-8 character
      * encoding.
      *
@@ -144,7 +212,7 @@ public class IOUtils {
      *            File to be read.
      */
     public static String toStringUtf8(File file) {
-        return toString(file, "UTF-8");
+        return toString(file, UTF_8);
     }
 
     /**
@@ -155,7 +223,7 @@ public class IOUtils {
      *            Input stream to be read.
      */
     public static String toStringUtf8(InputStream in) {
-        return toString(in, "UTF-8");
+        return toString(in, UTF_8);
     }
 
 }
